@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="./customize-data-table/customize.dataTable.min.css" rel="stylesheet">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.4.0/ui-bootstrap-tpls.min.js"></script>
+<script src="./customize-data-table/customize.dataTable.min.js"></script>
+
+<body>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+    <div class="row" style="padding-top: 3%;padding-left: 5%;padding-right: 5%;">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-success" data-ng-click="loadRecord();">Click Load Record</button>
+            <button type="button" class="btn btn-success" data-ng-click="loadRecordOneByOne();">Load Record One By One</button>
+            <button type="button" class="btn btn-success" data-ng-click="addNewRecord();">Add New Record</button>
+            <button type="button" class="btn btn-success" data-ng-click="deleteTopRecord();">Delete Top Record</button>
+        </div>
+    </div>
+    <div class="row" style="padding-top: 3%;padding-left: 5%;padding-right: 5%;">
+        <div class="col-md-12">
+
+            <customize-data-table id="dataTableAdminUsers"
+                                  table-config = "dataTableConfig"
+                                  table-action = "tableAction(action,data);">
+            </customize-data-table>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var app = angular.module("myApp", [
+        ,'ui.bootstrap'
+        ,'customize.dataTable'
+    ]);
+    app.controller("myCtrl", function($scope) {
+        initTable();
+        initData();
+
+        $scope.loadRecord = function(){
+            initData();
+        }
+
+        $scope.loadRecordOneByOne = function(){
+            $scope.dataTableConfig.records.push({
+                "id":4,
+                "userImage": "img1.png",
+                "first_name": "first name 4",
+                "last_name": "last name 4",
+                "position": "position 4",
+                "address": {line1:"address 4"},
+                "start_date": "28th Nov 08",
+                "start_date_time": new Date(),
+                "salary": "162700",
+                "status": 1
+            });
+            $scope.dataTableConfig.configUpdatedType = "initialize_record_one_by_one";//required.
+            $scope.dataTableConfig.configUpdatedDateTime = new Date();//required.
+        }
+
+        $scope.addNewRecord = function(){
+            $scope.dataTableConfig.records.push({
+                "id":5,
+                "userImage": "img2.png",
+                "first_name": "first name 5",
+                "last_name": "last name 5",
+                "position": "position 5",
+                "address": {line1:"address 5"},
+                "start_date": "28th Nov 08",
+                "start_date_time": new Date(),
+                "salary": "162700",
+                "status": 1
+            });
+            $scope.dataTableConfig.configUpdatedType = "add_new_record";//required.
+            $scope.dataTableConfig.configUpdatedDateTime = new Date();//required.
+        }
+
+        $scope.deleteTopRecord = function(){
+            $scope.dataTableConfig.records.splice(0,1);
+            console.log($scope.dataTableConfig.records);
+        }
+
+        $scope.tableAction = function(action,data){
+            console.log("action is "+action);
+            console.log(data);
+            if(action=="edit"){
+                for(var key in $scope.dataTableConfig.records){
+                    if($scope.dataTableConfig.records[key].id == data.id){
+                        $scope.dataTableConfig.records[key].first_name = "edit first name";
+                        $scope.dataTableConfig.records[key].last_name = "edit last name";
+                        $scope.dataTableConfig.records[key].address = {line1:"edit address"};
+                        $scope.dataTableConfig.records[key].status = 2;
+
+                        $scope.dataTableConfig.records[key].isEdit = true; //required.
+                        break;
+                    }
+                }
+                $scope.dataTableConfig.configUpdatedType = "edit_record";//required.
+                $scope.dataTableConfig.configUpdatedDateTime = new Date();//required.
+            }
+        }
+
+
+        function initTable(){
+            $scope.dataTableConfig = {
+                "configUpdatedType":"initialize_table", //required.
+                "configUpdatedDateTime":new Date(), //required.
+                "width":'100%',
+                "maxSize":5,
+                "pageSize":10,
+                "totalRecords":0,
+                "columns":[
+                    {
+                        "header":"",
+                        "columnKey":"checkbox",
+                        "columnAlign":"center",
+                        "align":"center",
+                        "checkbox":true,
+                        "width":30
+                    },
+                    {
+                        "header":"ID",
+                        "columnKey":"id",
+                        "alignHeader":"left", //column header align, default center
+                        "align":"left",//column data align, default center
+                        "sort":true
+                    },
+                    {
+                        "header":"",
+                        "columnKey":"userImage",
+                        "dataType":"image",//default is text
+                        "imageBasePath":"/images/",//if not a image base path set it empty eg(imageBasePath:"")
+                        "imageWidth":75,
+                        "imageHeight":50,
+                        "width":100
+                    },
+                    {
+                        "header":"First Name",
+                        "columnKey":"first_name",
+                        "sort":true,
+                        "filter":true,
+                        "filterOption":{ //default all option available.
+                            like:true, //Like
+                            eq:true, //Equal to
+                            gt:true,//Greater Than
+                            gte:true,//Greater Than or Equal
+                            lt:true,//Less Than
+                            lte:true//Less Than or Equal
+                        },
+                        "defaultSelectOption":"eq",//default top option is selected.
+                        "filterType":"free_text" //default type is "free_text". (filter_type are only "free_text = can type any text in filter box"  & "select_option = can select option").
+                    },
+                    {
+                        "header":"Last Name",
+                        "columnKey":"last_name"
+                    },
+                    {
+                        "header":"Position",
+                        "columnKey":"position"
+                    },
+                    {
+                        "header":"Salary",
+                        "columnKey":"salary",
+                        "dataType":"number",
+                        "fractionSize":2,
+                        "align":"right",
+                    },
+                    {
+                        "header":"Address",
+                        "columnKey":"address.line1",
+                        "filter":true,
+                        "filterOption":{ //default all option available.
+                            like:true //Like
+                        },
+                    },
+                    {
+                        "header":"Status",
+                        "columnKey":"status",
+                        "displayAs":[
+                            {columnKey:0,value:"Created",color:"#337ab7",fontWeight:'bold'},
+                            {columnKey:1,value:"Pending",color:"#337ab7",fontWeight:'bold'},
+                            {columnKey:2,value:"Approved",color:"#5cb85c",fontWeight:'bold'},
+                            {columnKey:3,value:"Deleted",color:"#eea236",fontWeight:'bold'}
+                        ],
+                        "align":"center",
+                        "filter":true,
+                        "filterOption":{
+                            eq:true
+                        },
+                        "filterType":"select_option",//default type is "free_text". (filter_type are only "free_text = can type any text in filter box"  & "select_option = can select option").
+                        "selectValues":[
+                            {text:"Created",value:0},
+                            {text:"Pending",value:1},
+                            {text:"Approved",value:2},
+                            {text:"Deleted",value:3}
+                        ]
+                    },
+                    {
+                        "header":"Start Date Time",
+                        "columnKey":"start_date_time",
+                        "dataType":"datetime",
+                        "format":"yyyy-MM-dd hh:mm a",
+                        "filter":true,
+                        "filterType":"datetime-local", //or date
+                        "filterOption":{ //default all option available.
+                            like:true //Like
+                        },
+                    },
+                    {
+                        "header":"Action",
+                        "columnKey":"action",
+                        "action":true,
+                        "property":[
+                            {
+                                title:"Edit",
+                                iconClass:"glyphicon-edit",
+                                iconColor:"#337ab7",
+                                action:"edit"
+                            }
+                        ],
+                        "width":50
+                    }
+                ],
+                "records": []
+            };
+        }
+
+        function initData(){
+            $scope.dataTableConfig.records = [
+                {
+                    "id":1,
+                    "userImage": "img1.png",
+                    "first_name": "first name 1",
+                    "last_name": "last name 1",
+                    "position": "position 1",
+                    "address": {line1:"address 1"},
+                    "start_date": "28th Nov 08",
+                    "start_date_time": new Date(),
+                    "salary": "162700",
+                    "status": 1
+                },
+                {
+                    "id":2,
+                    "userImage": "img2.png",
+                    "first_name": "first name 2",
+                    "last_name": "last name 2",
+                    "position": "position 2",
+                    "address": {line1:"address 2"},
+                    "start_date": "9th Oct 09",
+                    "start_date_time": new Date(),
+                    "salary": "1200000",
+                    "status": 2
+
+                },
+                {
+                    "id":3,
+                    "userImage": "img3.jpg",
+                    "first_name": "first name 3",
+                    "last_name": "last name 3",
+                    "position": "position 3",
+                    "address": {line1:"address 3"},
+                    "start_date": "12th Jan 09",
+                    "start_date_time": new Date(),
+                    "salary": "86000",
+                    "status": 3
+                }
+            ];
+            $scope.dataTableConfig.configUpdatedType = "initialize_records";//required.
+            $scope.dataTableConfig.configUpdatedDateTime = new Date();//required.
+        }
+    });
+</script>
+
+</body>
+</html>
