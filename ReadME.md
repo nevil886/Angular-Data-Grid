@@ -1,7 +1,7 @@
 Angular Customize Data Grid.
 ============================
 
-![Alt text]("https://github.com/nevil886/Angular-Data-Grid/blob/master/dataGrid.PNG" "Optional title")
+![Alt text](https://github.com/nevil886/Angular-Data-Grid/blob/master/dataGrid.PNG "Optional title")
     
 var app = angular.module("myApp", ['ui.bootstrap','customize.dataTable']);
 
